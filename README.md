@@ -1,1 +1,1 @@
-Repositório para o estudo e trabalho de Compiladores.
+Repositório para o estudo e trabalho do Compilador OASIS.
