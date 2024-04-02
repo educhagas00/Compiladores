@@ -1,42 +1,45 @@
 %{
-#include <string.h>
+#include <string>
+
 %}
 
-ESPACO [ \t]
+DELIM [ \t\n]
+WS {DELIM}+
+
 DIGITO [0-9]
-LETRA  [A-Za-z]
-
-DELIM {ESPACO}+
 NUM {DIGITO}+
-ID {LETRA}({LETRA}|{DIGITO})*
+REAL {NUM}+("."{NUM}+)? 
 
+LETRA [A-Za-z_]
+
+CHAR \'({LETRA}|{NUM})\'
+
+ID {LETRA}({LETRA}|{NUM})*
 
 %%
 
-"\n"        {}
+{WS}        {/* nenhuma ação e nenhum retorno */}
 
-{DELIM}     {}
+"\n"		{}
 
-"main"      { return TK_MAIN;}
+{DELIM} 	{}
 
-"int"       { return TK_TIPO_INT;}
+"main"		{return TK_MAIN;}
 
-"="         { return '=';}
+"int"		{return TK_TIPO_INT;}
 
-[(){}[\];,] { return *yytext;}
+[(){}[\];,]	{ return *yytext; }
 
-[+\-*/]     { return *yytext;}
+[+\-*/]		{ return *yytext; }
+
+"="		    { return '='; }
 
 {NUM}		{ yylval.l = yytext; return TK_NUM; }
-
 {ID}		{ yylval.l = yytext; return TK_ID; }
 
 .			{ *yytext; }
 
 %%
-//funcoes auxiliares 
-
-
 
 
 
