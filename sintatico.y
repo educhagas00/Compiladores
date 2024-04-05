@@ -81,6 +81,18 @@ E 			: E '+' E
 				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label + 
 					" = " + $1.label + " - " + $3.label + ";\n";
 			}
+			| E '*' E
+			{
+				$$.label = gentempcode();
+				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label + 
+					" = " + $1.label + " * " + $3.label + ";\n";
+			}
+			| E '/' E
+			{
+				$$.label = gentempcode();
+				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label + 
+					" = " + $1.label + " / " + $3.label + ";\n";
+			}
 			| TK_ID '=' E
 			{
 				$$.traducao = $1.traducao + $3.traducao + "\t" + $1.label + " = " + $3.label + ";\n";
