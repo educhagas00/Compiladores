@@ -20,8 +20,10 @@ void yyerror(string);
 string gentempcode();
 %}
 
-%token TK_NUM
-%token TK_MAIN TK_ID TK_TIPO_INT
+
+%token TK_MAIN
+%token TK_ID
+%token TK_NUM TK_TIPO_INT TK_TIPO_FLOAT
 %token TK_FIM TK_ERROR
 
 %start S
@@ -69,7 +71,11 @@ COMANDO 	: E ';'
 			}
 			;
 
-E 			: E '+' E
+E 			: TYPE E
+			{
+				$$.traducao = "\t" + $1.label + " " + $2.label + ";\n";
+			}
+			| E '+' E
 			{
 				$$.label = gentempcode();
 				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label + 
@@ -108,6 +114,17 @@ E 			: E '+' E
 				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
 			}
 			;
+
+TYPE		: TK_TIPO_INT
+			{
+				$$ = $1;
+			}
+			| TK_TIPO_FLOAT
+			{
+				$$ = $1;
+			}
+			;
+
 
 %%
 

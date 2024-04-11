@@ -1,4 +1,6 @@
 int main() {
-	b = a * 1;
-	c = d / 2;
+	int a;
+	a = 1;
+	float f;
+	0.2;
 }
