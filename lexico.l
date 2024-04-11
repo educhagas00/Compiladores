@@ -8,7 +8,7 @@ WS {DELIM}+
 
 DIGITO [0-9]
 NUM {DIGITO}+
-REAL {NUM}+("."{NUM}+)? 
+FLOAT {NUM}+("."{NUM}+)?
 
 LETRA [A-Za-z_]
 
@@ -26,7 +26,9 @@ ID {LETRA}({LETRA}|{NUM})*
 
 "main"		{return TK_MAIN;}
 
-"int"		{return TK_TIPO_INT;}
+"int"		{yylval.label = yytext; return TK_TIPO_INT;}
+
+"float"     {yylval.label = yytext; return TK_TIPO_FLOAT;}
 
 [(){}[\];,]	{ return *yytext; }
 
@@ -36,6 +38,7 @@ ID {LETRA}({LETRA}|{NUM})*
 
 {NUM}		{ yylval.label = yytext; return TK_NUM; }
 {ID}		{ yylval.label = yytext; return TK_ID; }
+{FLOAT}     { yylval.label = yytext; return TK_NUM; }
 
 .			{ *yytext; }
 
