@@ -22,8 +22,8 @@ string gentempcode();
 
 
 %token TK_MAIN
-%token TK_ID
-%token TK_NUM TK_TIPO_INT TK_TIPO_FLOAT
+%token TK_NUM TK_ID TK_FLOAT TK_CHAR
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR
 %token TK_FIM TK_ERROR
 
 %start S
@@ -69,13 +69,13 @@ COMANDO 	: E ';'
 			{
 				$$ = $1;
 			}
-			;
-
-E 			: TYPE E
+			| TYPE TK_ID ';'
 			{
 				$$.traducao = "\t" + $1.label + " " + $2.label + ";\n";
 			}
-			| E '+' E
+			;
+
+E 			: E '+' E
 			{
 				$$.label = gentempcode();
 				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label + 
@@ -113,6 +113,16 @@ E 			: TYPE E
 				$$.label = gentempcode();
 				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
 			}
+			| TK_FLOAT
+			{
+				$$.label = gentempcode();
+				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
+			}
+			| TK_CHAR
+			{
+				$$.label = gentempcode();
+				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
+			}
 			;
 
 TYPE		: TK_TIPO_INT
@@ -120,6 +130,10 @@ TYPE		: TK_TIPO_INT
 				$$ = $1;
 			}
 			| TK_TIPO_FLOAT
+			{
+				$$ = $1;
+			}
+			| TK_TIPO_CHAR
 			{
 				$$ = $1;
 			}
@@ -151,4 +165,4 @@ void yyerror(string MSG)
 {
 	cout << MSG << endl;
 	exit (0);
-}				
+}

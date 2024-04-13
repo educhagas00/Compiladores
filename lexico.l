@@ -24,11 +24,13 @@ ID {LETRA}({LETRA}|{NUM})*
 
 {DELIM} 	{}
 
-"main"		{return TK_MAIN;}
+"main"		{ return TK_MAIN; }
 
-"int"		{yylval.label = yytext; return TK_TIPO_INT;}
+"int"		{ yylval.label = yytext; return TK_TIPO_INT; }
 
-"float"     {yylval.label = yytext; return TK_TIPO_FLOAT;}
+"float"     { yylval.label = yytext; return TK_TIPO_FLOAT; }
+
+"char"      { yylval.label = yytext; return TK_TIPO_CHAR; }
 
 [(){}[\];,]	{ return *yytext; }
 
@@ -38,7 +40,8 @@ ID {LETRA}({LETRA}|{NUM})*
 
 {NUM}		{ yylval.label = yytext; return TK_NUM; }
 {ID}		{ yylval.label = yytext; return TK_ID; }
-{FLOAT}     { yylval.label = yytext; return TK_NUM; }
+{FLOAT}     { yylval.label = yytext; return TK_FLOAT; }
+{CHAR}      { yylval.label = yytext; return TK_CHAR; }
 
 .			{ *yytext; }
 

@@ -2,5 +2,8 @@ int main() {
 	int a;
 	a = 1;
 	float f;
-	0.2;
+	f = 0.2;
+	int t1;
+	char c;
+	c = "da";
 }
