@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
 
 #define YYSTYPE atributos
 
@@ -9,21 +10,52 @@ using namespace std;
 
 int var_temp_qnt;
 
-struct atributos
-{
+enum TipoVariavel {
+
+	INT = 0,
+	FLOAT = 1,
+	CHAR = 2
+};
+
+std::string tipoParaString(TipoVariavel tipo) {
+	
+    switch (tipo) {
+        case INT:
+            return "int";
+        case FLOAT:
+            return "float";
+        case CHAR:
+            return "char";
+        default:
+            return "unknown";
+    }
+}
+
+struct atributos {
+
 	string label;
 	string traducao;
+	enum TipoVariavel tipo;
 };
+
+typedef struct {
+
+	string nomeVariavel;
+	enum TipoVariavel tipoVariavel;
+} TABELA_SIMBOLOS;
+
+vector<TABELA_SIMBOLOS> tabelaSimbolos;
 
 int yylex(void);
 void yyerror(string);
 string gentempcode();
+void addTabela(TABELA_SIMBOLOS simbolo, TipoVariavel tipo, string nome);
 %}
 
 
 %token TK_MAIN
-%token TK_ID
-%token TK_NUM TK_TIPO_INT TK_TIPO_FLOAT
+%token TK_NUM TK_ID TK_FLOAT TK_CHAR
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR
 %token TK_FIM TK_ERROR
 
 %start S
@@ -39,8 +71,10 @@ S 			: TK_TIPO_INT TK_MAIN '(' ')' BLOCO
 								"#include <string.h>\n"
 								"#include <stdio.h>\n"
 								"int main(void) {\n";
-								
-				codigo += $5.traducao;
+				for (auto it = tabelaSimbolos.begin(); it != tabelaSimbolos.end(); it++) {
+					codigo += "\t" + tipoParaString(it->tipoVariavel) + " " + it->nomeVariavel + ";\n";
+				}
+				codigo += "\n" + $5.traducao;
 								
 				codigo += 	"\treturn 0;"
 							"\n}";
@@ -69,17 +103,40 @@ COMANDO 	: E ';'
 			{
 				$$ = $1;
 			}
+			| TYPE TK_ID ';'
+			{
+				TABELA_SIMBOLOS simbolo;
+				addTabela(simbolo, $1.tipo, $2.label);
+
+				// cout << tipoParaString($1.tipo) << endl;
+				// cout << $2.label << endl;
+				
+				// $$.traducao = "\t" + $1.label + " " + $2.label + ";\n";
+			}
+			| TK_ID '=' E ';'
+			{
+				$$.traducao = $1.traducao + $3.traducao + "\t" + $1.label + " = " + $3.label + ";\n";
+			}
 			;
 
-E 			: TYPE E
+E 			: E '+' E
 			{
-				$$.traducao = "\t" + $1.label + " " + $2.label + ";\n";
-			}
-			| E '+' E
-			{
+				// cout << "Tipo soma 1: " << tipoParaString($1.tipo) << endl;
+				// cout << "Tipo soma 2: " << tipoParaString($3.tipo) << endl;
+
 				$$.label = gentempcode();
-				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label + 
-					" = " + $1.label + " + " + $3.label + ";\n";
+
+				if ($1.tipo == FLOAT && $3.tipo == INT) {
+					// converte int pra float
+					string label = gentempcode();
+					$$.traducao += "\t" + label + " = (float) " + $3.label + ";\n";
+					TABELA_SIMBOLOS new_float;
+					addTabela(new_float, FLOAT, label);
+
+					$$.traducao += "\t" + $$.label + " = " + $1.label +  " + "  + label + ";\n";
+					TABELA_SIMBOLOS final_sum;
+					addTabela(final_sum, FLOAT, $$.label);
+				}
 			}
 			| E '-' E
 			{
@@ -99,28 +156,77 @@ E 			: TYPE E
 				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label + 
 					" = " + $1.label + " / " + $3.label + ";\n";
 			}
-			| TK_ID '=' E
-			{
-				$$.traducao = $1.traducao + $3.traducao + "\t" + $1.label + " = " + $3.label + ";\n";
-			}
 			| TK_NUM
 			{
+				$$.tipo = INT;
 				$$.label = gentempcode();
+
 				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
+
+				TABELA_SIMBOLOS simbolo;
+				addTabela(simbolo, $$.tipo, $$.label);
 			}
 			| TK_ID
 			{
+				bool found = false;
+				TABELA_SIMBOLOS variavel;
+
+				// cout << "IDDDDDDDDDDDDDDDDDDD" << endl;
+
+				for(int i = 0; i < tabelaSimbolos.size(); i++) {
+					if(tabelaSimbolos[i].nomeVariavel == $1.label) {
+						variavel = tabelaSimbolos[i];
+						found = true;
+					}
+				}
+
+				if (!found) {
+					yyerror("Variable is not declared.");
+				}
+
+				$$.tipo = variavel.tipoVariavel;
 				$$.label = gentempcode();
+
+				TABELA_SIMBOLOS simbolo;
+				addTabela(simbolo, $$.tipo, $$.label);
+
+				// $$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
+			}
+			| TK_FLOAT
+			{
+				$$.tipo = FLOAT;
+				$$.label = gentempcode();
+
+				TABELA_SIMBOLOS simbolo;
+				addTabela(simbolo, $$.tipo, $$.label);
+
+				// $$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
+			}
+			| '\'' TK_CHAR '\''
+			{
+				$$.label = gentempcode();
+				// cout << "OIIIIIIIIIIIIIIIIIIIIIIIIIIII" << endl;
+				if ($1.label.length() > 1) {
+					yyerror("Is not char");
+				}
+
 				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
 			}
 			;
 
 TYPE		: TK_TIPO_INT
 			{
+				$1.tipo = INT;
 				$$ = $1;
 			}
 			| TK_TIPO_FLOAT
 			{
+				$1.tipo = FLOAT;
+				$$ = $1;
+			}
+			| TK_TIPO_CHAR
+			{
+				$1.tipo = CHAR;
 				$$ = $1;
 			}
 			;
@@ -132,14 +238,14 @@ TYPE		: TK_TIPO_INT
 
 int yyparse();
 
-string gentempcode()
-{
+string gentempcode() {
+
 	var_temp_qnt++;
 	return "t" + to_string(var_temp_qnt);
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
+
 	var_temp_qnt = 0;
 
 	yyparse();
@@ -147,8 +253,19 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-void yyerror(string MSG)
-{
+void yyerror(string MSG) {
+	
 	cout << MSG << endl;
 	exit (0);
-}				
+}
+
+void addTabela(TABELA_SIMBOLOS simbolo, TipoVariavel tipo, string nome) {
+	simbolo.tipoVariavel = tipo;
+	simbolo.nomeVariavel = nome;
+
+	tabelaSimbolos.push_back(simbolo);
+}
+
+
+
+

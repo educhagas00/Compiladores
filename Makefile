@@ -20,6 +20,9 @@ debug: 	all
 
 translate: glf
 		./glf < exemplo.oasis
+		./glf < exemplo.oasis > teste.cpp
+		g++ -o teste teste.cpp -Wall
+		./teste
 
 clean:
 	rm y.tab.c
