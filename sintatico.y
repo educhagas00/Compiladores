@@ -49,6 +49,7 @@ vector<TABELA_SIMBOLOS> tabelaSimbolos;
 int yylex(void);
 void yyerror(string);
 string gentempcode();
+void addTabela(TABELA_SIMBOLOS simbolo, TipoVariavel tipo, string nome);
 %}
 
 
@@ -70,8 +71,10 @@ S 			: TK_TIPO_INT TK_MAIN '(' ')' BLOCO
 								"#include <string.h>\n"
 								"#include <stdio.h>\n"
 								"int main(void) {\n";
-								
-				codigo += $5.traducao;
+				for (auto it = tabelaSimbolos.begin(); it != tabelaSimbolos.end(); it++) {
+					codigo += "\t" + tipoParaString(it->tipoVariavel) + " " + it->nomeVariavel + ";\n";
+				}
+				codigo += "\n" + $5.traducao;
 								
 				codigo += 	"\treturn 0;"
 							"\n}";
@@ -102,27 +105,38 @@ COMANDO 	: E ';'
 			}
 			| TYPE TK_ID ';'
 			{
-				TABELA_SIMBOLOS valor;
+				TABELA_SIMBOLOS simbolo;
+				addTabela(simbolo, $1.tipo, $2.label);
 
-				valor.tipoVariavel = $1.tipo;
-				valor.nomeVariavel = $2.label;
-
-				cout << tipoParaString($1.tipo) << endl;
-				cout << $2.label << endl;
+				// cout << tipoParaString($1.tipo) << endl;
+				// cout << $2.label << endl;
 				
-				tabelaSimbolos.push_back(valor);
-				$$.traducao = "\t" + $1.label + " " + $2.label + ";\n";
-				
+				// $$.traducao = "\t" + $1.label + " " + $2.label + ";\n";
+			}
+			| TK_ID '=' E ';'
+			{
+				$$.traducao = $1.traducao + $3.traducao + "\t" + $1.label + " = " + $3.label + ";\n";
 			}
 			;
 
 E 			: E '+' E
 			{
-				cout << tipoParaString($1.tipo) << endl;
-				cout << tipoParaString($3.tipo) << endl;
+				// cout << "Tipo soma 1: " << tipoParaString($1.tipo) << endl;
+				// cout << "Tipo soma 2: " << tipoParaString($3.tipo) << endl;
+
 				$$.label = gentempcode();
-				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label + 
-					" = " + $1.label + " + " + $3.label + ";\n";
+
+				if ($1.tipo == FLOAT && $3.tipo == INT) {
+					// converte int pra float
+					string label = gentempcode();
+					$$.traducao += "\t" + label + " = (float) " + $3.label + ";\n";
+					TABELA_SIMBOLOS new_float;
+					addTabela(new_float, FLOAT, label);
+
+					$$.traducao += "\t" + $$.label + " = " + $1.label +  " + "  + label + ";\n";
+					TABELA_SIMBOLOS final_sum;
+					addTabela(final_sum, FLOAT, $$.label);
+				}
 			}
 			| E '-' E
 			{
@@ -142,20 +156,22 @@ E 			: E '+' E
 				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label + 
 					" = " + $1.label + " / " + $3.label + ";\n";
 			}
-			| TK_ID '=' E
-			{
-				$$.traducao = $1.traducao + $3.traducao + "\t" + $1.label + " = " + $3.label + ";\n";
-			}
 			| TK_NUM
 			{
 				$$.tipo = INT;
 				$$.label = gentempcode();
+
 				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
+
+				TABELA_SIMBOLOS simbolo;
+				addTabela(simbolo, $$.tipo, $$.label);
 			}
 			| TK_ID
 			{
 				bool found = false;
 				TABELA_SIMBOLOS variavel;
+
+				// cout << "IDDDDDDDDDDDDDDDDDDD" << endl;
 
 				for(int i = 0; i < tabelaSimbolos.size(); i++) {
 					if(tabelaSimbolos[i].nomeVariavel == $1.label) {
@@ -170,16 +186,30 @@ E 			: E '+' E
 
 				$$.tipo = variavel.tipoVariavel;
 				$$.label = gentempcode();
-				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
+
+				TABELA_SIMBOLOS simbolo;
+				addTabela(simbolo, $$.tipo, $$.label);
+
+				// $$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
 			}
 			| TK_FLOAT
 			{
+				$$.tipo = FLOAT;
 				$$.label = gentempcode();
-				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
+
+				TABELA_SIMBOLOS simbolo;
+				addTabela(simbolo, $$.tipo, $$.label);
+
+				// $$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
 			}
-			| TK_CHAR
+			| '\'' TK_CHAR '\''
 			{
 				$$.label = gentempcode();
+				// cout << "OIIIIIIIIIIIIIIIIIIIIIIIIIIII" << endl;
+				if ($1.label.length() > 1) {
+					yyerror("Is not char");
+				}
+
 				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
 			}
 			;
@@ -228,4 +258,14 @@ void yyerror(string MSG) {
 	cout << MSG << endl;
 	exit (0);
 }
+
+void addTabela(TABELA_SIMBOLOS simbolo, TipoVariavel tipo, string nome) {
+	simbolo.tipoVariavel = tipo;
+	simbolo.nomeVariavel = nome;
+
+	tabelaSimbolos.push_back(simbolo);
+}
+
+
+
 
