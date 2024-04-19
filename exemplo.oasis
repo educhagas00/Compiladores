@@ -1,8 +1,4 @@
 int main() {
-    int i;
-    float f;
-
-    float s;
-
-    s = f + i;
+    bool a;
+    a = True;
 }

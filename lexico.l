@@ -14,6 +14,8 @@ LETRA [A-Za-z_]
 
 CHAR \'({LETRA}|{NUM})\'
 
+BOOL ("True"|"False")
+
 ID {LETRA}({LETRA}|{NUM})*
 
 %%
@@ -32,16 +34,22 @@ ID {LETRA}({LETRA}|{NUM})*
 
 "char"      { yylval.label = yytext; return TK_TIPO_CHAR; }
 
+"bool"      { yylval.label = yytext; return TK_TIPO_BOOL; }
+
+
 [(){}[\];,]	{ return *yytext; }
 
 [+\-*/]		{ return *yytext; }
 
 "="		    { return '='; }
 
+
 {NUM}		{ yylval.label = yytext; return TK_NUM; }
-{ID}		{ yylval.label = yytext; return TK_ID; }
+{BOOL}      { yylval.label = yytext; return TK_BOOL; }
 {FLOAT}     { yylval.label = yytext; return TK_FLOAT; }
 {CHAR}      { yylval.label = yytext; return TK_CHAR; }
+{ID}		{ yylval.label = yytext; return TK_ID; }
+
 
 .			{ *yytext; }
 
