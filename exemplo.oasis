@@ -1,8 +1,11 @@
 int main() {
 	int i;
-	float f;
-	
-	float s;
+	float ii;
 
-	s = f + i;
+	i = 2;
+	ii = 4.0;
+
+	float sub;
+
+	sub = i - ii;
 }

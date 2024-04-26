@@ -10,6 +10,8 @@ DIGITO [0-9]
 NUM {DIGITO}+
 FLOAT {NUM}+("."{NUM}+)?
 
+NUMERO {[0-9]}+({[0-9]} | \'"_"\')*
+
 LETRA [A-Za-z_]
 
 CHAR \'({LETRA}|{NUM})\'
