@@ -1,4 +1,11 @@
 int main() {
-    bool a;
-    a = True;
+	int i;
+	float ii;
+
+	i = 2;
+	ii = 4.0;
+
+	float sub;
+
+	sub = i - ii;
 }
