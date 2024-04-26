@@ -14,7 +14,8 @@ enum TipoVariavel {
 
 	INT = 0,
 	FLOAT = 1,
-	CHAR = 2
+	CHAR = 2,
+	BOOL = 3
 };
 
 std::string tipoParaString(TipoVariavel tipo) {
@@ -26,6 +27,8 @@ std::string tipoParaString(TipoVariavel tipo) {
             return "float";
         case CHAR:
             return "char";
+		case BOOL:
+			return "bool";
         default:
             return "unknown";
     }
@@ -57,6 +60,7 @@ void addTabela(TABELA_SIMBOLOS simbolo, TipoVariavel tipo, string nome);
 %token TK_NUM TK_ID TK_FLOAT TK_CHAR
 %token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR
 %token TK_FIM TK_ERROR
+%token TK_BOOL TK_TIPO_BOOL
 
 %start S
 
@@ -70,6 +74,9 @@ S 			: TK_TIPO_INT TK_MAIN '(' ')' BLOCO
 								"#include <iostream>\n"
 								"#include <string.h>\n"
 								"#include <stdio.h>\n"
+								"#define bool int\n"
+								"#define False 0\n"
+								"#define True 1\n"
 								"int main(void) {\n";
 				for (auto it = tabelaSimbolos.begin(); it != tabelaSimbolos.end(); it++) {
 					codigo += "\t" + tipoParaString(it->tipoVariavel) + " " + it->nomeVariavel + ";\n";
@@ -212,6 +219,16 @@ E 			: E '+' E
 
 				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
 			}
+			|	TK_BOOL
+			{
+				$$.tipo = BOOL;
+				$$.label = gentempcode();
+
+				TABELA_SIMBOLOS simbolo;
+				addTabela(simbolo, $$.tipo, $$.label);
+				
+				$$.traducao = "\t" + $$.label + " = " + $1.label + ";\n";
+			}
 			;
 
 TYPE		: TK_TIPO_INT
@@ -227,6 +244,11 @@ TYPE		: TK_TIPO_INT
 			| TK_TIPO_CHAR
 			{
 				$1.tipo = CHAR;
+				$$ = $1;
+			}
+			| TK_TIPO_BOOL
+			{
+				$1.tipo = BOOL;
 				$$ = $1;
 			}
 			;

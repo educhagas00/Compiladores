@@ -1,9 +1,4 @@
 int main() {
-	int a;
-	a = 1;
-	float f;
-	f = 0.2;
-	int t1;
-	char c;
-	c = "da";
+    bool a;
+    a = True;
 }
