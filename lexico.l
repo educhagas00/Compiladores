@@ -10,8 +10,6 @@ DIGITO [0-9]
 NUM {DIGITO}+
 FLOAT {NUM}+("."{NUM}+)?
 
-NUMERO {[0-9]}+({[0-9]} | \'"_"\')*
-
 LETRA [A-Za-z_]
 
 CHAR \'({LETRA}|{NUM})\'
@@ -44,6 +42,10 @@ ID {LETRA}({LETRA}|{NUM})*
 [+\-*/]		{ return *yytext; }
 
 "="		    { return '='; }
+
+"&&"        { return TK_AND; }
+"||"        { return TK_OR; }
+"!"         { return TK_NOT; }
 
 
 {NUM}		{ yylval.label = yytext; return TK_NUM; }
