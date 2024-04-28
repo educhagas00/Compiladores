@@ -344,6 +344,8 @@ E 			: E '+' E
 					$$.label = gentempcode();
 					$$.traducao = $2.traducao + "\t" + $$.label +
 					" = !" + $2.label + ";\n"; 
+					TABELA_SIMBOLOS s;
+					addTabela(s, $1.tipo, $$.label);
 				}
 			}
 			| TK_NUM
