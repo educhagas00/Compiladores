@@ -10,8 +10,6 @@ DIGITO [0-9]
 NUM {DIGITO}+
 FLOAT {NUM}+("."{NUM}+)?
 
-NUMERO {[0-9]}+({[0-9]} | \'"_"\')*
-
 LETRA [A-Za-z_]
 
 CHAR \'({LETRA}|{NUM})\'
@@ -23,20 +21,22 @@ ID {LETRA}({LETRA}|{NUM})*
 %%
 
 {WS}        {/* nenhuma ação e nenhum retorno */}
-
 "\n"		{}
-
 {DELIM} 	{}
 
 "main"		{ return TK_MAIN; }
 
 "int"		{ yylval.label = yytext; return TK_TIPO_INT; }
-
 "float"     { yylval.label = yytext; return TK_TIPO_FLOAT; }
-
 "char"      { yylval.label = yytext; return TK_TIPO_CHAR; }
-
 "bool"      { yylval.label = yytext; return TK_TIPO_BOOL; }
+
+"=="        { yylval.label = "=="; return TK_EQ; }
+"!="        { yylval.label = "!="; return TK_NE; }
+"<"         { yylval.label = "<"; return TK_LT; }
+">"         { yylval.label = ">"; return TK_GT; }
+"<="        { yylval.label = "<="; return TK_LE; }
+">="        { yylval.label = ">="; return TK_GE; }
 
 
 [(){}[\];,]	{ return *yytext; }

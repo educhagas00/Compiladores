@@ -1,11 +1,8 @@
 int main() {
 	int i;
-	float ii;
+	int ii;
 
-	i = 2;
-	ii = 4.0;
+	bool comp;
 
-	float sub;
-
-	sub = i - ii;
+	i <= ii;
 }

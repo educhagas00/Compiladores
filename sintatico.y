@@ -57,10 +57,10 @@ void addTabela(TABELA_SIMBOLOS simbolo, TipoVariavel tipo, string nome);
 
 
 %token TK_MAIN
-%token TK_NUM TK_ID TK_FLOAT TK_CHAR
-%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR
+%token TK_NUM TK_ID TK_FLOAT TK_CHAR TK_BOOL TK_RELOP
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL
 %token TK_FIM TK_ERROR
-%token TK_BOOL TK_TIPO_BOOL
+%token TK_EQ TK_NE TK_LT TK_GT TK_LE TK_GE
 
 %start S
 
@@ -301,6 +301,269 @@ E 			: E '+' E
 				else {
 					yyerror("Invalid operation.");
 				}
+			}
+			| E TK_EQ E
+			{
+				if ($1.tipo != $3.tipo) {
+					
+					if($1.tipo == INT && $3.tipo == FLOAT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $1.label + ";\n" + "\t" + $$.label +
+					    " = " + cast + " == " + $3.label + ";\n";
+					}
+					
+					else if ($1.tipo == FLOAT && $3.tipo == INT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+						
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+						
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $3.label + ";\n" + "\t" + $$.label +
+						" = " + $1.label + " == " + cast + ";\n";
+					}
+				}
+
+				else if ($1.tipo == $3.tipo) {
+					$$.label = gentempcode();
+					$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
+					 " = " + $1.label +  " == "  + $3.label + ";\n";
+					TABELA_SIMBOLOS s;
+					addTabela(s, $1.tipo, $$.label);
+				}
+
+				else {
+					yyerror("Invalid operation.");
+				}
+			}
+			| E TK_NE E
+			{
+					if ($1.tipo != $3.tipo) {
+					
+					if($1.tipo == INT && $3.tipo == FLOAT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $1.label + ";\n" + "\t" + $$.label +
+					    " = " + cast + " != " + $3.label + ";\n";
+					}
+					
+					else if ($1.tipo == FLOAT && $3.tipo == INT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+						
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+						
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $3.label + ";\n" + "\t" + $$.label +
+						" = " + $1.label + " != " + cast + ";\n";
+					}
+				}
+
+				else if ($1.tipo == $3.tipo) {
+					$$.label = gentempcode();
+					$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
+					 " = " + $1.label +  " != "  + $3.label + ";\n";
+					TABELA_SIMBOLOS s;
+					addTabela(s, $1.tipo, $$.label);
+				}
+
+				else {
+					yyerror("Invalid operation.");
+				}
+
+			}
+			| E TK_LT E
+			{
+					if ($1.tipo != $3.tipo) {
+					
+					if($1.tipo == INT && $3.tipo == FLOAT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $1.label + ";\n" + "\t" + $$.label +
+					    " = " + cast + " < " + $3.label + ";\n";
+					}
+					
+					else if ($1.tipo == FLOAT && $3.tipo == INT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+						
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+						
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $3.label + ";\n" + "\t" + $$.label +
+						" = " + $1.label + " < " + cast + ";\n";
+					}
+				}
+
+				else if ($1.tipo == $3.tipo) {
+					$$.label = gentempcode();
+					$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
+					 " = " + $1.label +  " < "  + $3.label + ";\n";
+					TABELA_SIMBOLOS s;
+					addTabela(s, $1.tipo, $$.label);
+				}
+
+				else {
+					yyerror("Invalid operation.");
+				}
+
+			}
+			| E TK_GT E
+			{
+					if ($1.tipo != $3.tipo) {
+					
+					if($1.tipo == INT && $3.tipo == FLOAT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $1.label + ";\n" + "\t" + $$.label +
+					    " = " + cast + " > " + $3.label + ";\n";
+					}
+					
+					else if ($1.tipo == FLOAT && $3.tipo == INT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+						
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+						
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $3.label + ";\n" + "\t" + $$.label +
+						" = " + $1.label + " > " + cast + ";\n";
+					}
+				}
+
+				else if ($1.tipo == $3.tipo) {
+					$$.label = gentempcode();
+					$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
+					 " = " + $1.label +  " > "  + $3.label + ";\n";
+					TABELA_SIMBOLOS s;
+					addTabela(s, $1.tipo, $$.label);
+				}
+
+				else {
+					yyerror("Invalid operation.");
+				}
+
+			}
+			| E TK_LE E
+			{
+					if ($1.tipo != $3.tipo) {
+					
+					if($1.tipo == INT && $3.tipo == FLOAT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $1.label + ";\n" + "\t" + $$.label +
+					    " = " + cast + " <= " + $3.label + ";\n";
+					}
+					
+					else if ($1.tipo == FLOAT && $3.tipo == INT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+						
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+						
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $3.label + ";\n" + "\t" + $$.label +
+						" = " + $1.label + " <= " + cast + ";\n";
+					}
+				}
+
+				else if ($1.tipo == $3.tipo) {
+					$$.label = gentempcode();
+					$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
+					 " = " + $1.label +  " <= "  + $3.label + ";\n";
+					TABELA_SIMBOLOS s;
+					addTabela(s, $1.tipo, $$.label);
+				}
+
+				else {
+					yyerror("Invalid operation.");
+				}
+
+			}
+			| E TK_GE E
+			{
+					if ($1.tipo != $3.tipo) {
+					
+					if($1.tipo == INT && $3.tipo == FLOAT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $1.label + ";\n" + "\t" + $$.label +
+					    " = " + cast + " >= " + $3.label + ";\n";
+					}
+					
+					else if ($1.tipo == FLOAT && $3.tipo == INT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
+						
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
+						
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $3.label + ";\n" + "\t" + $$.label +
+						" = " + $1.label + " >= " + cast + ";\n";
+					}
+				}
+
+				else if ($1.tipo == $3.tipo) {
+					$$.label = gentempcode();
+					$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
+					 " = " + $1.label +  " >= "  + $3.label + ";\n";
+					TABELA_SIMBOLOS s;
+					addTabela(s, $1.tipo, $$.label);
+				}
+
+				else {
+					yyerror("Invalid operation.");
+				}
+
 			}
 			| TK_NUM
 			{
