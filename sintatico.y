@@ -524,47 +524,48 @@ E 			: E '+' E
 			}
 			| E TK_GE E
 			{
-					if ($1.tipo != $3.tipo) {
-					
-					if($1.tipo == INT && $3.tipo == FLOAT) {
-						TABELA_SIMBOLOS c;
-						string cast = gentempcode();
-						addTabela(c, FLOAT, cast);
+			if ($1.tipo != $3.tipo) {
 
-						TABELA_SIMBOLOS l;
-						$$.label = gentempcode();
-						addTabela(l, FLOAT, $$.label);
+				if($1.tipo == INT && $3.tipo == FLOAT) {
+					TABELA_SIMBOLOS c;
+					string cast = gentempcode();
+					addTabela(c, FLOAT, cast);
 
-						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $1.label + ";\n" + "\t" + $$.label +
-					    " = " + cast + " >= " + $3.label + ";\n";
-					}
-					
-					else if ($1.tipo == FLOAT && $3.tipo == INT) {
-						TABELA_SIMBOLOS c;
-						string cast = gentempcode();
-						addTabela(c, FLOAT, cast);
-						
-						TABELA_SIMBOLOS l;
-						$$.label = gentempcode();
-						addTabela(l, FLOAT, $$.label);
-						
-						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $3.label + ";\n" + "\t" + $$.label +
-						" = " + $1.label + " >= " + cast + ";\n";
-					}
-				}
-
-				else if ($1.tipo == $3.tipo) {
+					TABELA_SIMBOLOS l;
 					$$.label = gentempcode();
-					$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
-					 " = " + $1.label +  " >= "  + $3.label + ";\n";
-					TABELA_SIMBOLOS s;
-					addTabela(s, $1.tipo, $$.label);
-				}
+					addTabela(l, FLOAT, $$.label);
 
-				else {
-					yyerror("Invalid operation.");
+					$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $1.label + ";\n" + "\t" + $$.label +
+					" = " + cast + " >= " + $3.label + ";\n";
 				}
-        
+					
+				else if ($1.tipo == FLOAT && $3.tipo == INT) {
+					TABELA_SIMBOLOS c;
+					string cast = gentempcode();
+					addTabela(c, FLOAT, cast);
+					
+					TABELA_SIMBOLOS l;
+					$$.label = gentempcode();
+					addTabela(l, FLOAT, $$.label);
+					
+					$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $3.label + ";\n" + "\t" + $$.label +
+					" = " + $1.label + " >= " + cast + ";\n";
+				}
+			}
+
+			else if ($1.tipo == $3.tipo) {
+
+				$$.label = gentempcode();
+				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
+				 " = " + $1.label +  " >= "  + $3.label + ";\n";
+				TABELA_SIMBOLOS s;
+				addTabela(s, $1.tipo, $$.label);
+			}
+
+			else {
+				yyerror("Invalid operation.");
+			}
+			
 			| E TK_AND E
 			{
 				if ($1.tipo != BOOL || $3.tipo != BOOL)
@@ -697,6 +698,7 @@ TYPE		: TK_TIPO_INT
 			{
 				$1.tipo = BOOL;
 				$$ = $1;
+			}
 			}
 			;
 
