@@ -39,6 +39,9 @@ ID {LETRA}({LETRA}|{NUM})*
 ">="        { yylval.label = ">="; return TK_GE; }
 
 
+"(int)"     { yylval.label = "(int)"; return TK_CAST_I; }
+"(float)"   { yylval.label = "(float)"; return TK_CAST_F; }
+
 [(){}[\];,]	{ return *yytext; }
 
 [+\-*/]		{ return *yytext; }
