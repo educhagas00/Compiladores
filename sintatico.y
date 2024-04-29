@@ -59,7 +59,7 @@ void addTabela(TABELA_SIMBOLOS simbolo, TipoVariavel tipo, string nome);
 %token TK_MAIN
 %token TK_NUM TK_ID TK_FLOAT TK_CHAR TK_BOOL TK_RELOP
 %token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL
-%token TK_FIM TK_ERROR
+%token TK_FIM TK_ERROR TK_MAIS_MAIS TK_MENOS_MENOS
 %token TK_EQ TK_NE TK_LT TK_GT TK_LE TK_GE TK_AND TK_OR TK_NOT
 %token TK_CAST_I TK_CAST_F
 
@@ -556,19 +556,19 @@ E 			: E '+' E
 			}
 			| E TK_GE E
 			{
-			if ($1.tipo != $3.tipo) {
+				if ($1.tipo != $3.tipo) {
 
-				if($1.tipo == INT && $3.tipo == FLOAT) {
-					TABELA_SIMBOLOS c;
-					string cast = gentempcode();
-					addTabela(c, FLOAT, cast);
+					if($1.tipo == INT && $3.tipo == FLOAT) {
+						TABELA_SIMBOLOS c;
+						string cast = gentempcode();
+						addTabela(c, FLOAT, cast);
 
-					TABELA_SIMBOLOS l;
-					$$.label = gentempcode();
-					addTabela(l, FLOAT, $$.label);
+						TABELA_SIMBOLOS l;
+						$$.label = gentempcode();
+						addTabela(l, FLOAT, $$.label);
 
-					$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $1.label + ";\n" + "\t" + $$.label +
-					" = " + cast + " >= " + $3.label + ";\n";
+						$$.traducao = $1.traducao + $3.traducao + "\t" + cast + " = (float) " + $1.label + ";\n" + "\t" + $$.label +
+						" = " + cast + " >= " + $3.label + ";\n";
 				}
 					
 				else if ($1.tipo == FLOAT && $3.tipo == INT) {
@@ -585,18 +585,22 @@ E 			: E '+' E
 				}
 			}
 
+
 			else if ($1.tipo == $3.tipo) {
+
 
 				$$.label = gentempcode();
 				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
 				" = " + $1.label +  " >= "  + $3.label + ";\n";
 				TABELA_SIMBOLOS s;
 				addTabela(s, $1.tipo, $$.label);
+
 			}
 
 			else {
 				yyerror("Invalid operation.");
 			}
+
 			}
       
 			| E TK_AND E
@@ -643,6 +647,34 @@ E 			: E '+' E
 					TABELA_SIMBOLOS s;
 					addTabela(s, $1.tipo, $$.label);
 				}
+			}
+			| E TK_MAIS_MAIS
+			{
+				if($1.tipo != INT && $1.tipo != FLOAT)
+				{
+					yyerror("Invalid Operation. Only Int and Float alowed for this operation.");
+				}
+				else
+				{
+					$$.label = gentempcode();
+					TABELA_SIMBOLOS s;
+					addTabela(s, $$.tipo, $$.label);
+					$$.traducao = $1.traducao + "\t" + $$.label + " = " + $1.label + " + 1;\n";
+				}
+			}
+			| E TK_MENOS_MENOS
+			{
+				if($1.tipo != INT && $1.tipo != FLOAT)
+				{
+					yyerror("Invalid Operation. Only Int and Float alowed for this operation.");
+				}
+				else
+				{
+					$$.label = gentempcode();
+					TABELA_SIMBOLOS s;
+					addTabela(s, $$.tipo, $$.label);
+					$$.traducao = $1.traducao + "\t" + $$.label + " = " + $1.label + " - 1;\n";
+				}				
 			}
 			| TK_NUM
 			{

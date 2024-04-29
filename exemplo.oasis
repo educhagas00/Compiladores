@@ -3,4 +3,5 @@ int main() {
 	float i;
 
 	(float) i;
+
 }
