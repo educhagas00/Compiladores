@@ -553,19 +553,20 @@ E 			: E '+' E
 				}
 			}
 
-			else if ($1.tipo == $3.tipo) {
+        else if ($1.tipo == $3.tipo) {
 
-				$$.label = gentempcode();
-				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
-				 " = " + $1.label +  " >= "  + $3.label + ";\n";
-				TABELA_SIMBOLOS s;
-				addTabela(s, $1.tipo, $$.label);
-			}
+          $$.label = gentempcode();
+          $$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
+           " = " + $1.label +  " >= "  + $3.label + ";\n";
+          TABELA_SIMBOLOS s;
+          addTabela(s, $1.tipo, $$.label);
+        }
 
-			else {
-				yyerror("Invalid operation.");
+        else {
+          yyerror("Invalid operation.");
+        }
 			}
-			
+      
 			| E TK_AND E
 			{
 				if ($1.tipo != BOOL || $3.tipo != BOOL)
