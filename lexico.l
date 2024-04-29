@@ -45,6 +45,10 @@ ID {LETRA}({LETRA}|{NUM})*
 
 "="		    { return '='; }
 
+"&&"        { return TK_AND; }
+"||"        { return TK_OR; }
+"!"         { return TK_NOT; }
+
 
 {NUM}		{ yylval.label = yytext; return TK_NUM; }
 {BOOL}      { yylval.label = yytext; return TK_BOOL; }

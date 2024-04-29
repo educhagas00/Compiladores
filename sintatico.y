@@ -60,7 +60,7 @@ void addTabela(TABELA_SIMBOLOS simbolo, TipoVariavel tipo, string nome);
 %token TK_NUM TK_ID TK_FLOAT TK_CHAR TK_BOOL TK_RELOP
 %token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL
 %token TK_FIM TK_ERROR
-%token TK_EQ TK_NE TK_LT TK_GT TK_LE TK_GE
+%token TK_EQ TK_NE TK_LT TK_GT TK_LE TK_GE TK_AND TK_OR TK_NOT
 
 %start S
 
@@ -302,6 +302,7 @@ E 			: E '+' E
 					yyerror("Invalid operation.");
 				}
 			}
+
 			| E TK_EQ E
 			{
 				if ($1.tipo != $3.tipo) {
@@ -563,7 +564,51 @@ E 			: E '+' E
 				else {
 					yyerror("Invalid operation.");
 				}
-
+        
+			| E TK_AND E
+			{
+				if ($1.tipo != BOOL || $3.tipo != BOOL)
+				{
+					yyerror("Invalid Operation. Please, reconsider using bool.");
+				}
+				else
+				{
+					$$.label = gentempcode();
+					$$.traducao = $1.traducao + $3.traducao + "\t" + 
+					$$.label + " = " + $1.label + " && " + $3.label + ";\n";
+					TABELA_SIMBOLOS s;
+					addTabela(s, $1.tipo, $$.label);
+				}
+			}
+			| E TK_OR E
+			{
+				if ($1.tipo != BOOL || $3.tipo != BOOL)
+				{
+					yyerror("Invalid Operation. Please, reconsider using bool.");
+				}
+				else
+				{
+					$$.label = gentempcode();
+					$$.traducao = $1.traducao + $3.traducao + "\t" + 
+					$$.label + " = " + $1.label + " || " + $3.label + ";\n";
+					TABELA_SIMBOLOS s;
+					addTabela(s, $1.tipo, $$.label);
+				}
+			}
+			| TK_NOT E 
+			{
+				if($2.tipo != BOOL)
+				{
+					yyerror("Invalid Operation. Please, reconsider using bool.");
+				}
+				else
+				{
+					$$.label = gentempcode();
+					$$.traducao = $2.traducao + "\t" + $$.label +
+					" = !" + $2.label + ";\n"; 
+					TABELA_SIMBOLOS s;
+					addTabela(s, $1.tipo, $$.label);
+				}
 			}
 			| TK_NUM
 			{
