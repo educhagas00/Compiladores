@@ -700,7 +700,6 @@ TYPE		: TK_TIPO_INT
 				$1.tipo = BOOL;
 				$$ = $1;
 			}
-			}
 			;
 
 
