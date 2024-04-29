@@ -61,6 +61,7 @@ void addTabela(TABELA_SIMBOLOS simbolo, TipoVariavel tipo, string nome);
 %token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL
 %token TK_FIM TK_ERROR
 %token TK_EQ TK_NE TK_LT TK_GT TK_LE TK_GE TK_AND TK_OR TK_NOT
+%token TK_CAST_I TK_CAST_F
 
 %start S
 
@@ -302,7 +303,38 @@ E 			: E '+' E
 					yyerror("Invalid operation.");
 				}
 			}
+			| TK_CAST_I E
+			{
+				if ($2.tipo == INT) {
+					yyerror("Types are already equal.");
+				}
 
+				else if ($2.tipo == FLOAT) {
+					$2.tipo = INT;
+
+					TABELA_SIMBOLOS c;
+					$$.label = gentempcode();
+					addTabela(c, INT, $$.label);
+						
+					$$.traducao = $2.traducao + "\t" + $$.label + " = (int) " + $2.label + ";\n";
+				}
+			}
+			| TK_CAST_F E
+			{
+				if ($2.tipo == FLOAT) {
+					yyerror("Types are already equal.");
+				}
+
+				else if ($2.tipo == INT) {
+					$2.tipo = FLOAT;
+
+					TABELA_SIMBOLOS c;
+					$$.label = gentempcode();
+					addTabela(c, FLOAT, $$.label);
+						
+					$$.traducao = $2.traducao + "\t" + $$.label + " = (float) " + $2.label + ";\n";
+				}
+			}
 			| E TK_EQ E
 			{
 				if ($1.tipo != $3.tipo) {
@@ -553,18 +585,18 @@ E 			: E '+' E
 				}
 			}
 
-        else if ($1.tipo == $3.tipo) {
+			else if ($1.tipo == $3.tipo) {
 
-          $$.label = gentempcode();
-          $$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
-           " = " + $1.label +  " >= "  + $3.label + ";\n";
-          TABELA_SIMBOLOS s;
-          addTabela(s, $1.tipo, $$.label);
-        }
+				$$.label = gentempcode();
+				$$.traducao = $1.traducao + $3.traducao + "\t" + $$.label +
+				" = " + $1.label +  " >= "  + $3.label + ";\n";
+				TABELA_SIMBOLOS s;
+				addTabela(s, $1.tipo, $$.label);
+			}
 
-        else {
-          yyerror("Invalid operation.");
-        }
+			else {
+				yyerror("Invalid operation.");
+			}
 			}
       
 			| E TK_AND E

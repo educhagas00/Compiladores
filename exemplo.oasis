@@ -1,18 +1,6 @@
 int main() {
 
-	int i;
-	int ii;
+	float i;
 
-	bool comp;
-
-	i <= ii;
-
-
-  bool a;
-  a = True;
-  bool b;
-  b = False;
-  a || b;
-  a && b;
-  !a;
+	(float) i;
 }
