@@ -564,7 +564,7 @@ E 			: E '+' E
 				else {
 					yyerror("Invalid operation.");
 				}
-        
+			}
 			| E TK_AND E
 			{
 				if ($1.tipo != BOOL || $3.tipo != BOOL)
