@@ -1,12 +1,18 @@
 int main() {
 
+	int i;
+	int ii;
 
-    bool a;
-    a = True;
-    bool b;
-    b = False;
-    a || b;
-    a && b;
-    !a;
+	bool comp;
 
+	i <= ii;
+
+
+  bool a;
+  a = True;
+  bool b;
+  b = False;
+  a || b;
+  a && b;
+  !a;
 }
