@@ -62,6 +62,8 @@ void addTabela(TABELA_SIMBOLOS simbolo, TipoVariavel tipo, string nome);
 %token TK_FIM TK_ERROR TK_MAIS_MAIS TK_MENOS_MENOS
 %token TK_EQ TK_NE TK_LT TK_GT TK_LE TK_GE TK_AND TK_OR TK_NOT
 %token TK_CAST_I TK_CAST_F
+%token TK_IF TK_ELIF TK_ELSE
+%token TK_WHILE
 
 %start S
 
@@ -124,6 +126,15 @@ COMANDO 	: E ';'
 			| TK_ID '=' E ';'
 			{
 				$$.traducao = $1.traducao + $3.traducao + "\t" + $1.label + " = " + $3.label + ";\n";
+			}
+			| TK_IF '(' E ')' BLOCO
+			{
+				TABELA_SIMBOLOS simbolo;
+				$$.label = gentempcode();
+				addTabela(simbolo, BOOL, $$.label);
+
+				$$.traducao = $3.traducao + "\t" + $$.label + " = " + "!" + $3.label + ";\n";
+				$$.traducao += "\tif (" + $$.label + ") goto fim_if_" + ";\n" + $5.traducao + "\tfim_if_" + ":\n";
 			}
 			;
 
