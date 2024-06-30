@@ -54,6 +54,11 @@ ID {LETRA}({LETRA}|{NUM})*
 "++"        { return TK_MAIS_MAIS; }
 "--"        { return TK_MENOS_MENOS; }
 
+"if"        { yylval.label == "if"; return TK_IF; }
+"else if"   { yylval.label == "else if"; return TK_ELIF; }
+"else"      { yylval.label == "else"; return TK_ELSE; }
+"while"     { yylval.label == "while"; return TK_WHILE; }
+
 {NUM}		{ yylval.label = yytext; return TK_NUM; }
 {BOOL}      { yylval.label = yytext; return TK_BOOL; }
 {FLOAT}     { yylval.label = yytext; return TK_FLOAT; }

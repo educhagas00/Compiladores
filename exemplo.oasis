@@ -1,7 +1,10 @@
 int main() {
 
-	float i;
-
-	(float) i;
+	bool x;
+	x = True;
+	
+	if (x) {
+		x = 2;
+	}
 
 }
